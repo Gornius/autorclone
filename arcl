@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# Set up paths
+
+ARCL_CONFIG=$HOME/.config/arcl.conf
+BASEDIR=$(dirname $0)
+
+if ! [ -f $ARCL_CONFIG ]; then
+  echo "~/.config/arcl.conf doesn't exist! You need to set it up!"
+fi
+
+
+# Check if there is any argument
+if ! [ -z $1 ]; then
+  # Check if argument matches alias from config
+  if [ -z $(awk '/^[^#]/ {print $1}' $ARCL_CONFIG | awk "/$1/ {print \$0}") ]; then
+    echo "No match found in $ARCL_CONFIG!"
+  else
+    # And if it does mount it
+    ARCL_RCLONE_NAME=$(awk "/^[^#]/&&/^$1/ {print \$2}" $ARCL_CONFIG)
+
+    if ! [ -z $2 ] && [ $2 = "unmount" ]; then
+      umount $HOME/MountedDrives/$ARCL_RCLONE_NAME
+    else
+      mkdir -p $HOME/MountedDrives/$ARCL_RCLONE_NAME
+      umount $HOME/MountedDrives/$ARCL_RCLONE_NAME 2>/dev/null 1>/dev/null
+      rclone mount --daemon $ARCL_RCLONE_NAME: $HOME/MountedDrives/$ARCL_RCLONE_NAME
+    fi
+  fi
+
+else
+  echo "Usage: arcl alias" 
+fi
