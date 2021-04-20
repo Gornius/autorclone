@@ -19,7 +19,7 @@ if ! [ -z $1 ]; then
     # And if it does mount it
     ARCL_RCLONE_NAME=$(awk "/^[^#]/&&/^$1/ {print \$2}" $ARCL_CONFIG)
 
-    if ! [ -z $2 ] && [ $2 = "unmount" ]; then
+    if ! [ -z $2 ] && [ $2 = "u" ]; then
       umount $HOME/MountedDrives/$ARCL_RCLONE_NAME
     else
       mkdir -p $HOME/MountedDrives/$ARCL_RCLONE_NAME
